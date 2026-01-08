@@ -12,3 +12,41 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Artist {
+  id           Int       @id @default(autoincrement()) 
+  name         String
+  setlistFmId  String?   @unique
+  spotifyId    String?   @unique
+
+  concerts     Concert[]
+}
+
+model Concert {
+  id        Int      @id @default(autoincrement())
+  venue     String
+  city      String
+  date      DateTime
+
+  artistId  Int
+  artist    Artist  @relation(fields: [artistId], references: [id])
+
+  setlist   Setlist?
+  playlist  Playlist?
+}
+
+model Setlist {
+  id         Int      @id @default(autoincrement())
+  songs      Json
+
+  concertId  Int      @unique
+  concert    Concert  @relation(fields: [concertId], references: [id])
+}
+
+model Playlist {
+  id                 Int      @id @default(autoincrement())
+  spotifyPlaylistId  String   @unique
+
+  concertId          Int      @unique
+  concert            Concert  @relation(fields: [concertId], references: [id])
+}
